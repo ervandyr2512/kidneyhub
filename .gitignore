@@ -24,6 +24,10 @@
 .DS_Store
 *.pem
 
+# Firebase service account key - JANGAN PERNAH di-commit!
+serviceAccountKey.json
+*serviceAccount*.json
+
 # debug
 npm-debug.log*
 yarn-debug.log*
