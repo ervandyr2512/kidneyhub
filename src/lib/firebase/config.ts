@@ -1,7 +1,7 @@
 // ============================================================
 // KidneyHub - Firebase Configuration
-// Initializes Firebase app, Auth, and Realtime Database.
-// Gracefully handles missing env vars at build time.
+// Project: kidneyhub-id
+// App ID: 1:96952140150:web:a3ddbd8aaed1637cca3a57
 // ============================================================
 
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
@@ -16,6 +16,7 @@ const firebaseConfig = {
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 // Only initialize if API key is present (skips build-time evaluation)
@@ -31,3 +32,13 @@ if (firebaseConfig.apiKey) {
 
 export { auth, db };
 export default app;
+
+// ============================================================
+// Analytics — lazy-loaded hanya di browser
+// ============================================================
+export async function initAnalytics() {
+  if (typeof window === 'undefined' || !app) return null;
+  const { getAnalytics, isSupported } = await import('firebase/analytics');
+  if (!(await isSupported())) return null;
+  return getAnalytics(app);
+}
