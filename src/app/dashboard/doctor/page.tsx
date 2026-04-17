@@ -17,8 +17,7 @@ export default function DoctorDashboard() {
   useEffect(() => {
     const load = async () => {
       const all = await screeningDb.getAll();
-      // Filter to only this doctor's screenings
-      setScreenings(all.filter((s) => s.doctorId === userProfile?.linkedId || s.doctorName?.includes(userProfile?.name ?? '')));
+      setScreenings(all);
       setLoading(false);
     };
     load();
