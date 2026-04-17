@@ -23,11 +23,27 @@ import { DB_PATHS } from '@/types';
 
 // ── Generic helpers ──────────────────────────────────────────
 
+/**
+ * Recursively strip undefined values from an object.
+ * Firebase Realtime Database rejects any payload containing undefined.
+ */
+function stripUndefined<T>(obj: T): T {
+  if (Array.isArray(obj)) return obj.map(stripUndefined) as unknown as T;
+  if (obj !== null && typeof obj === 'object') {
+    return Object.fromEntries(
+      Object.entries(obj)
+        .filter(([, v]) => v !== undefined)
+        .map(([k, v]) => [k, stripUndefined(v)])
+    ) as T;
+  }
+  return obj;
+}
+
 /** Create a new record and return its generated key */
 export async function createRecord<T extends object>(path: string, data: T): Promise<string> {
   const listRef = ref(db, path);
   const newRef = push(listRef);
-  await set(newRef, { ...data, createdAt: new Date().toISOString() });
+  await set(newRef, stripUndefined({ ...data, createdAt: new Date().toISOString() }));
   return newRef.key!;
 }
 
@@ -54,7 +70,7 @@ export async function updateRecord<T extends object>(
   id: string,
   data: Partial<T>
 ): Promise<void> {
-  await update(ref(db, `${path}/${id}`), { ...data, updatedAt: new Date().toISOString() });
+  await update(ref(db, `${path}/${id}`), stripUndefined({ ...data, updatedAt: new Date().toISOString() }));
 }
 
 /** Delete a record by ID */

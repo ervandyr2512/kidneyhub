@@ -58,8 +58,10 @@ export default function HospitalRecordsPage() {
       toast.success('Rekam medis berhasil disimpan');
       setShowAdd(false);
       await load();
-    } catch {
-      toast.error('Gagal menyimpan rekam medis');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      toast.error(`Gagal menyimpan: ${msg}`);
+      console.error('medicalRecord.create error:', err);
     } finally {
       setFormLoading(false);
     }
@@ -73,8 +75,10 @@ export default function HospitalRecordsPage() {
       toast.success('Rekam medis diperbarui');
       setEditRecord(null);
       await load();
-    } catch {
-      toast.error('Gagal memperbarui');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      toast.error(`Gagal memperbarui: ${msg}`);
+      console.error('medicalRecord.update error:', err);
     } finally {
       setFormLoading(false);
     }
