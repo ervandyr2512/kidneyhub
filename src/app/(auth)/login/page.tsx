@@ -29,13 +29,14 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const fbUser = await signIn(email, password);
-      if (!fbUser.emailVerified) {
+      const profile = await getUserProfile(fbUser.uid);
+      // Cek verifikasi: dari Firebase Auth ATAU dari flag DB (untuk akun dummy/staff)
+      if (!fbUser.emailVerified && !profile?.isEmailVerified) {
         toast.error('Email belum diverifikasi. Cek kotak masuk Anda.');
         setLoading(false);
         return;
       }
-      const profile = await getUserProfile(fbUser.uid);
-      toast.success(`Selamat datang, ${profile?.name}!`);
+      toast.success(`Selamat datang, ${profile?.name ?? email}!`);
       router.push(dashboardPath[profile?.role ?? 'donor']);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Login gagal';
